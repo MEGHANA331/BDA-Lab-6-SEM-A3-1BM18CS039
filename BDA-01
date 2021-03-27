@@ -1,0 +1,72 @@
+Experiment #1: Perform the following DB operations using Cassandra.
+OF Create a keyspace by name Employee
+
+
+
+
+
+
+
+CREATE KEYSPACE Employee WITH REPLICATION = { 'class':'SimpleStrategy','replication_factor':1}; 
+cqlsh> USE Employee;
+cqlsh:employee> DESCRIBE Employee;
+
+tudents       system_auth  system_distributed  system_traces
+system_schema  system       employee 
+
+cqlsh:employee> BEGIN BATCH INSERT INTO Employee_Info( EMP_ID, EMP_Name, EMP_Designation, DateOfJoining, Emp_Salary, Emp_Dept_Name) VALUES (1, 'ABC', 'Manager', '2020-12-15', 1000.00, 'Finance') INSERT INTO Employee_Info( EMP_ID, EMP_Name, EMP_Designation, DateOfJoining, Emp_Salary, Emp_Dept_Name) VALUES (2, 'EFG', 'Director', '2020-01-01', 10000.00, 'Finance') INSERT INTO Employee_Info( EMP_ID, EMP_Name, EMP_Designation, DateOfJoining, Emp_Salary, Emp_Dept_Name) VALUES (3, 'PQR', 'Manager', '2020-10-05', 1500.00, 'Software Development') APPLY BATCH;
+cqlsh:employee> SELECT * FROM Employee_Info;
+
+ emp_id | dateofjoining                   | emp_dept_name        | emp_designation | emp_name | emp_salary
+--------+---------------------------------+----------------------+-----------------+----------+------------
+      1 | 2020-12-14 18:30:00.000000+0000 |              Finance |         Manager |      ABC |       1000
+      2 | 2019-12-31 18:30:00.000000+0000 |              Finance |        Director |      EFG |      10000
+      3 | 2020-10-04 18:30:00.000000+0000 | Software Development |         Manager |      PQR |       1500
+
+(3 rows)
+
+cqlsh:employee> UPDATE Employee_Info SET Emp_Name = 'XYZ' WHERE Emp_ID=3;
+cqlsh:employee> UPDATE Employee_Info SET Emp_Dept_Name = 'Accounts' WHERE Emp_ID=1;
+cqlsh:employee> SELECT * FROM Employee_Info;
+
+ emp_id | dateofjoining                   | emp_dept_name        | emp_designation | emp_name | emp_salary
+--------+---------------------------------+----------------------+-----------------+----------+------------
+      1 | 2020-12-14 18:30:00.000000+0000 |             Accounts |         Manager |      ABC |       1000
+      2 | 2019-12-31 18:30:00.000000+0000 |              Finance |        Director |      EFG |      10000
+      3 | 2020-10-04 18:30:00.000000+0000 | Software Development |         Manager |      XYZ |       1500
+
+(3 rows)
+cqlsh:employee> UPDATE Employee_Info SET Emp_Name = 'XYZ' WHERE Emp_ID=1;
+cqlsh:employee> UPDATE Employee_Info SET Emp_Name = 'PQR' WHERE Emp_ID=3;
+cqlsh:employee> SELECT * FROM Employee_Info;
+
+ emp_id | dateofjoining                   | emp_dept_name        | emp_designation | emp_name | emp_salary
+--------+---------------------------------+----------------------+-----------------+----------+------------
+      1 | 2020-12-14 18:30:00.000000+0000 |             Accounts |         Manager |      XYZ |       1000
+      2 | 2019-12-31 18:30:00.000000+0000 |              Finance |        Director |      EFG |      10000
+      3 | 2020-10-04 18:30:00.000000+0000 | Software Development |         Manager |      PQR |       1500
+
+(3 rows)
+
+cqlsh:employee> ALTER TABLE Employee_Info ADD Projects list<text>;
+cqlsh:employee> SELECT * FROM Employee_Info;
+
+ emp_id | dateofjoining                   | emp_dept_name        | emp_designation | emp_name | emp_salary | projects
+--------+---------------------------------+----------------------+-----------------+----------+------------+----------
+      1 | 2020-12-14 18:30:00.000000+0000 |             Accounts |         Manager |      XYZ |       1000 |     null
+      2 | 2019-12-31 18:30:00.000000+0000 |              Finance |        Director |      EFG |      10000 |     null
+      3 | 2020-10-04 18:30:00.000000+0000 | Software Development |         Manager |      PQR |       1500 |     null
+
+(3 rows)
+
+cqlsh:employee> UPDATE Employee_Info SET Projects = ['LMN, UVW'] WHERE Emp_ID=1;
+cqlsh:employee> SELECT * FROM Employee_Info;
+
+ emp_id | dateofjoining                   | emp_dept_name        | emp_designation | emp_name | emp_salary | projects
+--------+---------------------------------+----------------------+-----------------+----------+------------+--------------
+      1 | 2020-12-14 18:30:00.000000+0000 |             Accounts |         Manager |      XYZ |       1000 | ['LMN, UVW']
+      2 | 2019-12-31 18:30:00.000000+0000 |              Finance |        Director |      EFG |      10000 |         null
+      3 | 2020-10-04 18:30:00.000000+0000 | Software Development |         Manager |      PQR |       1500 |         null
+
+(3 rows)
+
